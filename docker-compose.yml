@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: autoify_postgres
+    environment:
+      POSTGRES_USER: autoify
+      POSTGRES_PASSWORD: autoify_pass
+      POSTGRES_DB: autoify_db
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U autoify']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: autoify_redis
+    command: redis-server --appendonly yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Uncomment for local monitoring
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports: ['9090:9090']
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports: ['3001:3000']
+
+volumes:
+  postgres_data:
+  redis_data:
