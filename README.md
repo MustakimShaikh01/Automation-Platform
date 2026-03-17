@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./apps/assets/autoify_logo_banner_1773778964909.png" alt="Autoify Banner" width="100%" />
+  <img src="./apps/assets/image.png" alt="Autoify Banner" width="100%" />
 </p>
 
 <h1 align="center">🚀 Autoify</h1>
