@@ -10,21 +10,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================
-// TENANT (White-label Organization)
-// ============================================
+////////////////////////////////////////////////
+//// TENANT (White-label organization)
+////////////////////////////////////////////////
+
 model Tenant {
-  id              String   @id @default(cuid())
-  name            String
-  slug            String   @unique
-  domain          String?  @unique
-  logoUrl         String?
-  primaryColor    String   @default("#6366f1")
-  secondaryColor  String   @default("#8b5cf6")
-  plan            Plan     @default(STARTER)
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id      String  @id @default(cuid())
+  name    String
+  slug    String  @unique
+  domain  String? @unique
+  logoUrl String?
+
+  primaryColor   String @default("#6366f1")
+  secondaryColor String @default("#8b5cf6")
+
+  plan     Plan    @default(STARTER)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   users        User[]
   workflows    Workflow[]
@@ -41,28 +45,35 @@ enum Plan {
   ENTERPRISE
 }
 
-// ============================================
-// USER
-// ============================================
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  avatarUrl     String?
-  role          UserRole  @default(MEMBER)
-  googleId      String?   @unique
-  passwordHash  String?
-  isActive      Boolean   @default(true)
-  lastLoginAt   DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+////////////////////////////////////////////////
+//// USER
+////////////////////////////////////////////////
 
-  tenantId  String
-  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+model User {
+  id        String  @id @default(cuid())
+  email     String
+  name      String?
+  avatarUrl String?
+
+  role UserRole @default(MEMBER)
+
+  googleId     String?
+  passwordHash String?
+
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   workflows  Workflow[]
   executions Execution[]
 
+  @@unique([tenantId, email])
+  @@index([tenantId])
   @@map("users")
 }
 
@@ -72,29 +83,39 @@ enum UserRole {
   MEMBER
 }
 
-// ============================================
-// WORKFLOW
-// ============================================
+////////////////////////////////////////////////
+//// WORKFLOW
+////////////////////////////////////////////////
+
 model Workflow {
-  id          String         @id @default(cuid())
+  id String @id @default(cuid())
+
   name        String
   description String?
-  graph       Json           // React Flow graph: { nodes, edges }
-  isActive    Boolean        @default(false)
-  isTemplate  Boolean        @default(false)
-  triggerType TriggerType    @default(MANUAL)
-  webhookUrl  String?        @unique
-  schedule    String?        // cron expression
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
 
-  tenantId  String
-  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User   @relation(fields: [userId], references: [id])
+  graph      Json // React Flow nodes/edges
+  isActive   Boolean @default(false)
+  isTemplate Boolean @default(false)
+
+  triggerType TriggerType @default(MANUAL)
+
+  webhookUrl String?
+  schedule   String? // cron expression
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   executions Execution[]
 
+  @@unique([tenantId, webhookUrl])
+  @@index([tenantId])
+  @@index([userId])
   @@map("workflows")
 }
 
@@ -106,28 +127,41 @@ enum TriggerType {
   FORM
 }
 
-// ============================================
-// EXECUTION (Single workflow run)
-// ============================================
+////////////////////////////////////////////////
+//// WORKFLOW EXECUTION
+////////////////////////////////////////////////
+
 model Execution {
-  id          String          @id @default(cuid())
-  status      ExecutionStatus @default(PENDING)
-  triggerData Json?           // input payload
-  result      Json?           // final output
-  logs        Json?           // step-by-step log array
+  id String @id @default(cuid())
+
+  status ExecutionStatus @default(PENDING)
+
+  triggerData Json?
+  result      Json?
+  logs        Json?
+
   startedAt   DateTime?
   completedAt DateTime?
-  duration    Int?            // ms
-  error       String?
-  createdAt   DateTime        @default(now())
 
-  workflowId  String
-  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id])
+  duration Int?
+  error    String?
 
+  retryCount Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  @@index([workflowId])
+  @@index([tenantId])
+  @@index([status])
   @@map("executions")
 }
 
@@ -139,43 +173,65 @@ enum ExecutionStatus {
   CANCELLED
 }
 
-// ============================================
-// INTEGRATION (Connected Apps)
-// ============================================
-model Integration {
-  id           String   @id @default(cuid())
-  provider     String   // gmail | slack | stripe | twilio | openai
-  name         String
-  credentials  Json     // encrypted { accessToken, refreshToken, apiKey, ... }
-  isConnected  Boolean  @default(false)
-  connectedAt  DateTime?
-  expiresAt    DateTime?
-  metadata     Json?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+////////////////////////////////////////////////
+//// INTEGRATIONS
+////////////////////////////////////////////////
 
-  tenantId  String
-  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+model Integration {
+  id String @id @default(cuid())
+
+  provider IntegrationProvider
+  name     String
+
+  credentials Json
+  metadata    Json?
+
+  isConnected Boolean @default(false)
+
+  connectedAt DateTime?
+  expiresAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, provider])
+  @@index([tenantId])
   @@map("integrations")
 }
 
-// ============================================
-// API KEY
-// ============================================
+enum IntegrationProvider {
+  GMAIL
+  SLACK
+  STRIPE
+  TWILIO
+  OPENAI
+  WEBHOOK
+}
+
+////////////////////////////////////////////////
+//// API KEYS
+////////////////////////////////////////////////
+
 model ApiKey {
-  id          String    @id @default(cuid())
-  name        String
-  keyHash     String    @unique
-  keyPrefix   String    // first 8 chars for display: "ak_1a2b3c..."
-  lastUsedAt  DateTime?
-  expiresAt   DateTime?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
+  id String @id @default(cuid())
 
-  tenantId  String
-  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  keyHash   String @unique
+  keyPrefix String
 
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
   @@map("api_keys")
 }

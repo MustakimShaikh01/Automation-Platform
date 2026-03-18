@@ -6,7 +6,7 @@ export declare class AiController {
         text: string;
         prompt?: string;
     }): Promise<{
-        summary: string | null;
+        summary: string;
     }>;
     classify(body: {
         text: string;
@@ -16,7 +16,7 @@ export declare class AiController {
         prompt: string;
         context?: any;
     }): Promise<{
-        generated: string | null;
+        generated: string;
     }>;
     extract(body: {
         text: string;

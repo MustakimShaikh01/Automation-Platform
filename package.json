@@ -8,7 +8,9 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "web": "pnpm --filter web dev",
-    "api": "pnpm --filter api dev"
+    "api": "pnpm --filter api dev",
+    "prisma:generate": "pnpm --filter api exec prisma generate",
+    "prisma:push": "pnpm --filter api exec prisma db push"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

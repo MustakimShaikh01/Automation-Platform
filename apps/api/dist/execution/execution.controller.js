@@ -18,7 +18,6 @@ const swagger_1 = require("@nestjs/swagger");
 const execution_service_1 = require("./execution.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let ExecutionController = class ExecutionController {
-    executionService;
     constructor(executionService) {
         this.executionService = executionService;
     }

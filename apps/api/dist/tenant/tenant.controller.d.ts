@@ -14,7 +14,7 @@ export declare class TenantController {
         primaryColor: string;
         secondaryColor: string;
         plan: import("@prisma/client").$Enums.Plan;
-    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    }, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     getUsage(req: any): Promise<{
         workflows: number;
         executions: number;

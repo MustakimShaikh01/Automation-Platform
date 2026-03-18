@@ -13,9 +13,6 @@ exports.RegisterDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
 class RegisterDto {
-    name;
-    email;
-    password;
 }
 exports.RegisterDto = RegisterDto;
 __decorate([

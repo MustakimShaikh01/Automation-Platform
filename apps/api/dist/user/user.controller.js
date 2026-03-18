@@ -18,7 +18,6 @@ const swagger_1 = require("@nestjs/swagger");
 const user_service_1 = require("./user.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let UserController = class UserController {
-    userService;
     constructor(userService) {
         this.userService = userService;
     }

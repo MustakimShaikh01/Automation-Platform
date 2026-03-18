@@ -19,6 +19,7 @@ export declare class ExecutionController {
         startedAt: Date | null;
         completedAt: Date | null;
         duration: number | null;
+        retryCount: number;
         workflowId: string;
     })[]>;
     stats(req: any): Promise<{
@@ -29,7 +30,7 @@ export declare class ExecutionController {
         successRate: number;
         avgDurationMs: number;
     }>;
-    findOne(id: string, req: any): Promise<({
+    findOne(id: string, req: any): Promise<{
         workflow: {
             name: string;
             graph: import("@prisma/client/runtime/library").JsonValue;
@@ -47,6 +48,7 @@ export declare class ExecutionController {
         startedAt: Date | null;
         completedAt: Date | null;
         duration: number | null;
+        retryCount: number;
         workflowId: string;
-    }) | null>;
+    }>;
 }

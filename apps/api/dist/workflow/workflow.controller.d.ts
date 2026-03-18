@@ -4,8 +4,8 @@ export declare class WorkflowController {
     constructor(workflowService: WorkflowService);
     findAll(req: any): Promise<({
         user: {
-            name: string | null;
-            avatarUrl: string | null;
+            name: string;
+            avatarUrl: string;
         };
         _count: {
             executions: number;
@@ -28,7 +28,7 @@ export declare class WorkflowController {
     getTemplates(): Promise<{
         id: string;
         name: string;
-        description: string | null;
+        description: string;
         graph: import("@prisma/client/runtime/library").JsonValue;
         triggerType: import("@prisma/client").$Enums.TriggerType;
     }[]>;
@@ -46,6 +46,7 @@ export declare class WorkflowController {
             startedAt: Date | null;
             completedAt: Date | null;
             duration: number | null;
+            retryCount: number;
             workflowId: string;
         }[];
     } & {

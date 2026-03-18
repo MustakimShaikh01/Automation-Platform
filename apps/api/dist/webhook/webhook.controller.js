@@ -18,7 +18,6 @@ const swagger_1 = require("@nestjs/swagger");
 const webhook_service_1 = require("./webhook.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let WebhookController = class WebhookController {
-    webhookService;
     constructor(webhookService) {
         this.webhookService = webhookService;
     }

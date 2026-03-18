@@ -18,7 +18,6 @@ const swagger_1 = require("@nestjs/swagger");
 const tenant_service_1 = require("./tenant.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let TenantController = class TenantController {
-    tenantService;
     constructor(tenantService) {
         this.tenantService = tenantService;
     }

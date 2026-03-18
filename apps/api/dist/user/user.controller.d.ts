@@ -5,10 +5,10 @@ export declare class UserController {
     findAll(req: any): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
         email: string;
-        name: string | null;
-        avatarUrl: string | null;
+        name: string;
+        avatarUrl: string;
         role: import("@prisma/client").$Enums.UserRole;
-        lastLoginAt: Date | null;
+        lastLoginAt: Date;
         createdAt: Date;
     }[]>;
 }

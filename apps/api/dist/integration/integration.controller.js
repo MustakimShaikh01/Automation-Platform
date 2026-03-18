@@ -18,7 +18,6 @@ const swagger_1 = require("@nestjs/swagger");
 const integration_service_1 = require("./integration.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let IntegrationController = class IntegrationController {
-    integrationService;
     constructor(integrationService) {
         this.integrationService = integrationService;
     }

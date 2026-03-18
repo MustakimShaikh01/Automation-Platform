@@ -8,21 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var AiService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const openai_1 = __importDefault(require("openai"));
+const openai_1 = require("openai");
 let AiService = AiService_1 = class AiService {
-    config;
-    logger = new common_1.Logger(AiService_1.name);
-    openai;
     constructor(config) {
         this.config = config;
+        this.logger = new common_1.Logger(AiService_1.name);
         const apiKey = this.config.get('OPENAI_API_KEY');
         if (apiKey) {
             this.openai = new openai_1.default({ apiKey });

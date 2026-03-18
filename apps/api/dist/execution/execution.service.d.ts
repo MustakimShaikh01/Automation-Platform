@@ -21,6 +21,7 @@ export declare class ExecutionService {
         startedAt: Date | null;
         completedAt: Date | null;
         duration: number | null;
+        retryCount: number;
         workflowId: string;
     }>;
     updateStatus(id: string, status: ExecutionStatus, updates?: any): Promise<{
@@ -36,6 +37,7 @@ export declare class ExecutionService {
         startedAt: Date | null;
         completedAt: Date | null;
         duration: number | null;
+        retryCount: number;
         workflowId: string;
     }>;
     findAll(tenantId: string, workflowId?: string, limit?: number): Promise<({
@@ -55,9 +57,10 @@ export declare class ExecutionService {
         startedAt: Date | null;
         completedAt: Date | null;
         duration: number | null;
+        retryCount: number;
         workflowId: string;
     })[]>;
-    findOne(id: string, tenantId: string): Promise<({
+    findOne(id: string, tenantId: string): Promise<{
         workflow: {
             name: string;
             graph: import("@prisma/client/runtime/library").JsonValue;
@@ -75,8 +78,9 @@ export declare class ExecutionService {
         startedAt: Date | null;
         completedAt: Date | null;
         duration: number | null;
+        retryCount: number;
         workflowId: string;
-    }) | null>;
+    }>;
     getStats(tenantId: string): Promise<{
         total: number;
         success: number;

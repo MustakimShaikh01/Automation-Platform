@@ -18,7 +18,6 @@ const swagger_1 = require("@nestjs/swagger");
 const workflow_service_1 = require("./workflow.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let WorkflowController = class WorkflowController {
-    workflowService;
     constructor(workflowService) {
         this.workflowService = workflowService;
     }

@@ -16,12 +16,9 @@ const bullmq_1 = require("bullmq");
 const config_1 = require("@nestjs/config");
 exports.WORKFLOW_QUEUE = 'workflow-execution';
 let QueueService = QueueService_1 = class QueueService {
-    config;
-    logger = new common_1.Logger(QueueService_1.name);
-    queue;
-    queueEvents;
     constructor(config) {
         this.config = config;
+        this.logger = new common_1.Logger(QueueService_1.name);
     }
     async onModuleInit() {
         const connection = {

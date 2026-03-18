@@ -14,7 +14,7 @@ export declare class TenantService {
         primaryColor: string;
         secondaryColor: string;
         plan: import("@prisma/client").$Enums.Plan;
-    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    }, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     findBySlug(slug: string): import("@prisma/client").Prisma.Prisma__TenantClient<{
         id: string;
         name: string;
@@ -27,7 +27,7 @@ export declare class TenantService {
         primaryColor: string;
         secondaryColor: string;
         plan: import("@prisma/client").$Enums.Plan;
-    } | null, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    }, null, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     update(id: string, dto: {
         name?: string;
         logoUrl?: string;

@@ -7,26 +7,12 @@ export declare class AuthService {
     private readonly prisma;
     constructor(userService: UserService, jwtService: JwtService, prisma: PrismaService);
     validateUser(email: string, password: string): Promise<{
-        tenant: {
-            id: string;
-            name: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            slug: string;
-            domain: string | null;
-            logoUrl: string | null;
-            primaryColor: string;
-            secondaryColor: string;
-            plan: import("@prisma/client").$Enums.Plan;
-        };
-    } & {
         id: string;
         email: string;
-        googleId: string | null;
         name: string | null;
         avatarUrl: string | null;
         role: import("@prisma/client").$Enums.UserRole;
+        googleId: string | null;
         passwordHash: string | null;
         isActive: boolean;
         lastLoginAt: Date | null;

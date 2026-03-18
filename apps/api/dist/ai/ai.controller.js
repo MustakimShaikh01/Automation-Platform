@@ -18,7 +18,6 @@ const swagger_1 = require("@nestjs/swagger");
 const ai_service_1 = require("./ai.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let AiController = class AiController {
-    aiService;
     constructor(aiService) {
         this.aiService = aiService;
     }

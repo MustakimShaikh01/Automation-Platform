@@ -14,7 +14,6 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const uuid_1 = require("uuid");
 let WorkflowService = class WorkflowService {
-    prisma;
     constructor(prisma) {
         this.prisma = prisma;
     }

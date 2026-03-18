@@ -17,11 +17,11 @@ export declare class QueueService implements OnModuleInit {
         executionId: string;
     }): Promise<Job<any, any, string>>;
     getJobStatus(jobId: string): Promise<{
-        id: string | undefined;
+        id: string;
         state: import("bullmq").JobState | "unknown";
         data: any;
         progress: import("bullmq").JobProgress;
-    } | null>;
+    }>;
     getQueueStats(): Promise<{
         waiting: number;
         active: number;

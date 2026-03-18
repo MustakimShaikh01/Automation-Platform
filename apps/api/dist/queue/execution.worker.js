@@ -19,17 +19,12 @@ const execution_service_1 = require("../execution/execution.service");
 const prisma_service_1 = require("../prisma/prisma.service");
 const ai_service_1 = require("../ai/ai.service");
 let ExecutionWorker = ExecutionWorker_1 = class ExecutionWorker {
-    config;
-    executionService;
-    prisma;
-    aiService;
-    logger = new common_1.Logger(ExecutionWorker_1.name);
-    worker;
     constructor(config, executionService, prisma, aiService) {
         this.config = config;
         this.executionService = executionService;
         this.prisma = prisma;
         this.aiService = aiService;
+        this.logger = new common_1.Logger(ExecutionWorker_1.name);
     }
     async onModuleInit() {
         const connection = {
@@ -128,7 +123,7 @@ let ExecutionWorker = ExecutionWorker_1 = class ExecutionWorker {
                 await new Promise((r) => setTimeout(r, (node.data?.seconds || 1) * 1000));
                 return { delayed: true };
             case 'webhook':
-                const fetch = (await import('node-fetch')).default;
+                const fetch = (await Promise.resolve().then(() => require('node-fetch'))).default;
                 const res = await fetch(node.data.url, {
                     method: node.data.method || 'POST',
                     headers: { 'Content-Type': 'application/json' },
