@@ -3,6 +3,20 @@ export declare class UserService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     findByEmail(email: string): import("@prisma/client").Prisma.Prisma__UserClient<{
+        tenant: {
+            id: string;
+            name: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            slug: string;
+            domain: string | null;
+            logoUrl: string | null;
+            primaryColor: string;
+            secondaryColor: string;
+            plan: import("@prisma/client").$Enums.Plan;
+        };
+    } & {
         id: string;
         email: string;
         name: string | null;

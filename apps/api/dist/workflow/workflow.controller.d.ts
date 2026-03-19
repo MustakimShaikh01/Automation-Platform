@@ -35,10 +35,10 @@ export declare class WorkflowController {
     findOne(id: string, req: any): Promise<{
         executions: {
             error: string | null;
+            result: import("@prisma/client/runtime/library").JsonValue | null;
             id: string;
             createdAt: Date;
             tenantId: string;
-            result: import("@prisma/client/runtime/library").JsonValue | null;
             userId: string | null;
             status: import("@prisma/client").$Enums.ExecutionStatus;
             triggerData: import("@prisma/client/runtime/library").JsonValue | null;

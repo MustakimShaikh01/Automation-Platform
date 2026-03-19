@@ -6,7 +6,7 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   findByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email }, include: { tenant: true } });
+    return this.prisma.user.findFirst({ where: { email }, include: { tenant: true } });
   }
 
   findById(id: string) {

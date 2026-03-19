@@ -10,10 +10,10 @@ export declare class ExecutionService {
         triggerData?: any;
     }): Promise<{
         error: string | null;
+        result: import("@prisma/client/runtime/library").JsonValue | null;
         id: string;
         createdAt: Date;
         tenantId: string;
-        result: import("@prisma/client/runtime/library").JsonValue | null;
         userId: string | null;
         status: import("@prisma/client").$Enums.ExecutionStatus;
         triggerData: import("@prisma/client/runtime/library").JsonValue | null;
@@ -26,10 +26,10 @@ export declare class ExecutionService {
     }>;
     updateStatus(id: string, status: ExecutionStatus, updates?: any): Promise<{
         error: string | null;
+        result: import("@prisma/client/runtime/library").JsonValue | null;
         id: string;
         createdAt: Date;
         tenantId: string;
-        result: import("@prisma/client/runtime/library").JsonValue | null;
         userId: string | null;
         status: import("@prisma/client").$Enums.ExecutionStatus;
         triggerData: import("@prisma/client/runtime/library").JsonValue | null;
@@ -46,10 +46,10 @@ export declare class ExecutionService {
         };
     } & {
         error: string | null;
+        result: import("@prisma/client/runtime/library").JsonValue | null;
         id: string;
         createdAt: Date;
         tenantId: string;
-        result: import("@prisma/client/runtime/library").JsonValue | null;
         userId: string | null;
         status: import("@prisma/client").$Enums.ExecutionStatus;
         triggerData: import("@prisma/client/runtime/library").JsonValue | null;
@@ -67,10 +67,10 @@ export declare class ExecutionService {
         };
     } & {
         error: string | null;
+        result: import("@prisma/client/runtime/library").JsonValue | null;
         id: string;
         createdAt: Date;
         tenantId: string;
-        result: import("@prisma/client/runtime/library").JsonValue | null;
         userId: string | null;
         status: import("@prisma/client").$Enums.ExecutionStatus;
         triggerData: import("@prisma/client/runtime/library").JsonValue | null;

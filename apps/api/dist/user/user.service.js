@@ -17,7 +17,7 @@ let UserService = class UserService {
         this.prisma = prisma;
     }
     findByEmail(email) {
-        return this.prisma.user.findUnique({ where: { email }, include: { tenant: true } });
+        return this.prisma.user.findFirst({ where: { email }, include: { tenant: true } });
     }
     findById(id) {
         return this.prisma.user.findUnique({ where: { id }, include: { tenant: true } });
