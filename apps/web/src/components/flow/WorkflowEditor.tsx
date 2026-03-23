@@ -161,11 +161,12 @@ export default function WorkflowEditor({ workflow }: WorkflowEditorProps) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden flex"
+      className="rounded-2xl overflow-hidden flex animate-fade-in"
       style={{
-        height: 'calc(100vh - 140px)',
-        border: '1px solid rgba(99,102,241,0.2)',
-        background: '#0a0a0f',
+        height: 'calc(100vh - 150px)',
+        border: '1px solid var(--border-subtle)',
+        background: 'var(--bg-base)',
+        boxShadow: '0 20px 50px -12px rgba(0,0,0,0.5)',
       }}
     >
       {/* ── CANVAS ── */}
@@ -181,330 +182,323 @@ export default function WorkflowEditor({ workflow }: WorkflowEditorProps) {
           nodeTypes={nodeTypes}
           fitView
           fitViewOptions={{ padding: 0.3 }}
-          minZoom={0.3}
-          maxZoom={2}
+          minZoom={0.2}
+          maxZoom={1.5}
           deleteKeyCode="Delete"
-          style={{ background: '#0a0a0f' }}
+          style={{ background: 'var(--bg-base)' }}
         >
           <Background
-            color="rgba(99,102,241,0.12)"
-            gap={28}
+            color="var(--brand-500)"
+            gap={32}
             size={1}
             variant={BackgroundVariant.Dots}
+            style={{ opacity: 0.15 }}
           />
-          <Controls showInteractive={false} />
+          <Controls 
+            showInteractive={false} 
+            className="!bg-background !border-subtle !rounded-xl !overflow-hidden !shadow-2xl"
+          />
           <MiniMap
-            maskColor="rgba(8,8,15,0.85)"
+            maskColor="rgba(7,7,15,0.8)"
+            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '12px' }}
             nodeColor={(n) => {
               if (n.type === 'trigger') return '#10b981';
               if (n.type === 'ai') return '#a855f7';
               if (n.type === 'condition') return '#f59e0b';
-              return '#6366f1';
+              return 'var(--brand-500)';
             }}
           />
 
-          {/* ── Top-Left: Workflow Name + Status ── */}
-          <Panel position="top-left" className="m-3">
-            <div
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl"
-              style={{
-                background: 'rgba(15,15,26,0.95)',
-                border: '1px solid rgba(99,102,241,0.2)',
-                backdropFilter: 'blur(12px)',
-              }}
-            >
-              <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                <Zap size={13} className="text-indigo-400" />
+          {/* ── Top-Left: Status ── */}
+          <Panel position="top-left" className="m-4">
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl glass-card border-brand/20 shadow-2xl">
+              <div className="w-8 h-8 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center text-brand-400">
+                <GitBranch size={14} />
               </div>
               <div>
-                <span className="font-bold text-white text-sm">{workflow.name}</span>
-                <div className="mt-0.5">
-                  <span className={`badge ${workflow.isActive ? 'badge-success' : 'badge-pending'}`}>
-                    {workflow.isActive ? '● Active' : '○ Draft'}
+                <span className="font-bold text-white text-sm tracking-tight">{workflow.status === 'PUBLISHED' ? 'Live Production' : 'Staging Draft'}</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className={`h-1.5 w-1.5 rounded-full ${workflow.isActive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    {workflow.isActive ? 'Active' : 'Paused'}
                   </span>
                 </div>
               </div>
             </div>
           </Panel>
 
-          {/* ── Top-Right: Action Buttons ── */}
-          <Panel position="top-right" className="m-3 flex gap-2">
+          {/* ── Top-Right: Actions ── */}
+          <Panel position="top-right" className="m-4 flex gap-2">
             <button
               onClick={handleTestRun}
               disabled={isTestRunning}
-              className="btn-ghost border border-white/10 text-sm"
-              style={{ backdropFilter: 'blur(12px)', background: 'rgba(15,15,26,0.9)' }}
+              className="btn-secondary h-10 px-4 text-xs font-bold"
+              style={{ background: 'var(--bg-surface)', backdropFilter: 'blur(12px)' }}
             >
-              {isTestRunning ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
-              Test Run
+              {isTestRunning ? <Loader2 size={14} className="animate-spin mr-2" /> : <Play size={14} className="mr-2" />}
+              Simulation
             </button>
             <button
               onClick={handleSave}
               disabled={updateMutation.isPending}
-              className="btn-primary text-sm"
+              className="btn-primary h-10 px-6 text-xs font-black uppercase tracking-widest"
             >
-              {updateMutation.isPending ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-              Save
+              {updateMutation.isPending ? <Loader2 size={14} className="animate-spin mr-2" /> : <Save size={14} className="mr-2" />}
+              Deploy
             </button>
           </Panel>
 
           {/* ── Bottom hint ── */}
-          <Panel position="bottom-center" className="mb-3">
-            <div className="text-[11px] text-slate-600 px-3 py-1.5 rounded-full"
-              style={{ background: 'rgba(15,15,26,0.7)' }}>
-              Drag nodes • Connect handles • Press Delete to remove selected
+          <Panel position="bottom-center" className="mb-6">
+            <div className="text-[10px] font-bold text-slate-600 px-4 py-2 rounded-full glass-card border-none tracking-wide">
+              DRAG NODES <span className="mx-2 opacity-30">•</span> CONNECT HANDLES <span className="mx-2 opacity-30">•</span> PRESS [DEL] TO REMOVE
             </div>
           </Panel>
         </ReactFlow>
       </div>
 
-      {/* ── RIGHT PANEL ── */}
-      <div
-        className="w-72 flex flex-col overflow-y-auto"
-        style={{
-          background: 'rgba(12,12,20,0.97)',
-          borderLeft: '1px solid rgba(99,102,241,0.15)',
-        }}
+      {/* ── RIGHT UTILITY PANEL ── */}
+      <aside
+        className="w-80 flex flex-col glass border-l border-subtle relative z-20"
+        style={{ background: 'var(--bg-surface)' }}
       >
         {selectedNode ? (
-          /* ── Node Properties ── */
-          <div className="p-5 flex flex-col h-full">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-sm font-bold text-white">Node Settings</h2>
+          /* ── NODE CONFIG ── */
+          <div className="flex flex-col h-full animate-fade-in">
+            <div className="p-6 border-b border-subtle flex items-center justify-between bg-white/[0.02]">
+              <div>
+                <h2 className="text-xs font-black text-white uppercase tracking-widest mb-1">Node Properties</h2>
+                <p className="text-[10px] text-slate-500 font-medium">Configure step logic and data</p>
+              </div>
               <button
                 onClick={() => setSelectedNode(null)}
-                className="p-1 text-slate-500 hover:text-white transition-colors rounded"
+                className="p-2 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
               >
-                <X size={14} />
+                <X size={16} />
               </button>
             </div>
 
-            <div className="space-y-4 flex-1">
-              {/* Label */}
-              <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Label</label>
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Common Label */}
+              <div className="space-y-2">
+                <label className="section-label">Display Name</label>
                 <input
                   type="text"
-                  className="input-field text-sm"
+                  className="input-field !bg-base"
                   value={selectedNode.data.label || ''}
                   onChange={(e) => updateSelectedNodeData('label', e.target.value)}
-                  placeholder="Node label..."
+                  placeholder="Step description..."
                 />
               </div>
 
-              {/* Webhook URL for trigger nodes */}
+              <div className="divider" />
+
+              {/* Webhook Logic */}
               {selectedNode.type === 'trigger' && (
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Webhook URL</label>
-                  <div className="flex gap-1">
-                    <input
-                      type="text"
-                      readOnly
-                      value={workflow.webhookUrl || 'Not yet generated'}
-                      className="input-field rounded-r-none text-xs font-mono text-slate-400 flex-1"
-                    />
-                    <button
-                      onClick={copyWebhook}
-                      className="btn-secondary rounded-l-none px-3 flex-shrink-0 border-l-0"
-                    >
-                      <Copy size={13} className="text-indigo-400" />
-                    </button>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="section-label">Endpoint URL</label>
+                    <div className="flex gap-2">
+                      <div className="flex-1 bg-black/40 rounded-lg px-3 py-2 border border-white/5 font-mono text-[10px] text-brand-300 truncate">
+                        {workflow.webhookUrl || 'not-assigned'}
+                      </div>
+                      <button
+                        onClick={copyWebhook}
+                        className="p-2 rounded-lg bg-brand/10 border border-brand/20 text-brand-400 hover:bg-brand/20 transition-colors"
+                      >
+                        <Copy size={14} />
+                      </button>
+                    </div>
                   </div>
-                  {workflow.webhookUrl && (
-                    <p className="text-[10px] text-slate-600 mt-1.5 font-mono">POST to this URL to trigger the workflow</p>
-                  )}
+                  <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10">
+                    <p className="text-[10px] text-emerald-400/80 leading-relaxed italic">
+                      "Send JSON payloads to this endpoint to trigger 
+                      this workflow in real-time."
+                    </p>
+                  </div>
                 </div>
               )}
 
-              {/* Trigger type selector */}
-              {selectedNode.type === 'trigger' && (
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Trigger Type</label>
-                  <select
-                    className="input-field text-sm"
-                    value={selectedNode.data.type || 'webhook'}
-                    onChange={(e) => updateSelectedNodeData('type', e.target.value)}
-                  >
-                    <option value="webhook">Webhook</option>
-                    <option value="schedule">Cron Schedule</option>
-                    <option value="manual">Manual</option>
-                  </select>
-                </div>
-              )}
-
-              {/* AI Node settings */}
+              {/* AI Config */}
               {selectedNode.type === 'ai' && (
-                <>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">AI Action</label>
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <label className="section-label">Intelligence Mode</label>
                     <select
-                      className="input-field text-sm"
+                      className="input-field !bg-base"
                       value={selectedNode.data.action || 'summarize'}
                       onChange={(e) => updateSelectedNodeData('action', e.target.value)}
                     >
-                      <option value="summarize">Summarize Text</option>
-                      <option value="extract">Extract Data (JSON)</option>
-                      <option value="classify">Classify Intent</option>
-                      <option value="generate">Generate Content</option>
-                      <option value="decision">AI Decision (Route)</option>
+                      <option value="summarize">Summarization Engine</option>
+                      <option value="extract">Structured Data Extraction</option>
+                      <option value="classify">Sentiment & Intent Analysis</option>
+                      <option value="generate">Content Generation</option>
+                      <option value="decision">Logic Gate (AI Powered)</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">System Prompt</label>
+                  <div className="space-y-2">
+                    <label className="section-label">Agent Instructions</label>
                     <textarea
-                      className="input-field h-28 text-sm resize-none"
-                      placeholder="You are an expert assistant. Analyze the input and..."
+                      className="input-field !bg-base h-40 resize-none text-[13px] leading-relaxed"
+                      placeholder="Define the behavior of the AI for this specific step..."
                       value={selectedNode.data.prompt || ''}
                       onChange={(e) => updateSelectedNodeData('prompt', e.target.value)}
                     />
                   </div>
-                </>
+                </div>
               )}
 
-              {/* Condition Node settings */}
+              {/* Condition Logic */}
               {selectedNode.type === 'condition' && (
-                <>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Field</label>
+                <div className="space-y-4">
+                  <div className="space-y-2 text-center">
+                    <div className="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-500 font-bold">
+                      IF STATEMENT
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="section-label">Key to Validate</label>
                     <input
                       type="text"
-                      className="input-field text-sm font-mono"
-                      placeholder="e.g. data.status"
+                      className="input-field !bg-base font-mono"
+                      placeholder="e.g. payload.user.id"
                       value={selectedNode.data.field || ''}
                       onChange={(e) => updateSelectedNodeData('field', e.target.value)}
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Operator</label>
+                  <div className="space-y-2">
+                    <label className="section-label">Logic Operator</label>
                     <select
-                      className="input-field text-sm"
+                      className="input-field !bg-base"
                       value={selectedNode.data.operator || '=='}
                       onChange={(e) => updateSelectedNodeData('operator', e.target.value)}
                     >
-                      <option value="==">== equals</option>
-                      <option value="!=">!= not equals</option>
-                      <option value=">">{">"} greater than</option>
-                      <option value="<">{"<"} less than</option>
-                      <option value="contains">contains</option>
-                      <option value="exists">exists</option>
+                      <option value="==">Strict Equality (==)</option>
+                      <option value="!=">Inequality (!=)</option>
+                      <option value=">">Greater Than (&gt;)</option>
+                      <option value="<">Less Than (&lt;)</option>
+                      <option value="contains">Collection Contains</option>
+                      <option value="exists">Key Exists</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Value</label>
+                  <div className="space-y-2">
+                    <label className="section-label">Expected Value</label>
                     <input
                       type="text"
-                      className="input-field text-sm font-mono"
-                      placeholder="e.g. success"
+                      className="input-field !bg-base font-mono"
+                      placeholder="Match value..."
                       value={selectedNode.data.value || ''}
                       onChange={(e) => updateSelectedNodeData('value', e.target.value)}
                     />
                   </div>
-                </>
+                </div>
               )}
             </div>
 
-            {/* Delete Node */}
-            <div className="mt-4 pt-4 border-t border-white/5">
+            <div className="p-6 bg-white/[0.01] border-t border-subtle">
               <button
                 onClick={deleteSelectedNode}
-                className="btn-danger w-full justify-center text-sm"
+                className="btn-danger w-full justify-center h-11 text-xs font-black uppercase tracking-tighter"
               >
-                Remove Node
+                Delete Step
               </button>
             </div>
           </div>
         ) : (
-          /* ── Add Nodes Panel ── */
-          <div className="p-5">
-            <h2 className="text-sm font-bold text-white mb-5">Add Nodes</h2>
+          /* ── NODE LIBRARY ── */
+          <div className="flex flex-col h-full animate-fade-in">
+            <div className="p-6 border-b border-subtle bg-white/[0.02]">
+              <h2 className="text-xs font-black text-white uppercase tracking-widest mb-1">Component Library</h2>
+              <p className="text-[10px] text-slate-500 font-medium">Add building blocks to your flow</p>
+            </div>
 
-            {/* Triggers */}
-            <div className="mb-5">
-              <p className="section-title">Triggers</p>
-              <div className="space-y-2">
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+              {/* Trigger Group */}
+              <div className="space-y-3">
+                <label className="section-label">Event Triggers</label>
                 <button
                   onClick={() => addNode('trigger', 'webhook')}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all hover:bg-white/5"
-                  style={{ border: '1px solid rgba(16,185,129,0.2)' }}
+                  className="w-full flex items-center gap-4 p-4 rounded-xl glass-card hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all group border-emerald-500/10"
                 >
-                  <span className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-400 shrink-0">
-                    <Webhook size={14} />
-                  </span>
-                  <div>
-                    <div className="text-xs font-semibold text-white">Webhook</div>
-                    <div className="text-[10px] text-slate-500">Trigger on HTTP POST</div>
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 shadow-lg group-hover:scale-110 transition-transform">
+                    <Webhook size={18} />
                   </div>
-                  <ChevronRight size={13} className="ml-auto text-slate-600" />
+                  <div className="text-left flex-1">
+                    <div className="text-xs font-bold text-white mb-0.5">Webhook</div>
+                    <div className="text-[10px] text-slate-500 leading-tight">External HTTP trigger</div>
+                  </div>
+                  <Plus size={14} className="text-slate-600 group-hover:text-emerald-400 transition-colors" />
                 </button>
               </div>
-            </div>
 
-            {/* Logic */}
-            <div className="mb-5">
-              <p className="section-title">Logic</p>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => addNode('condition')}
-                  className="flex flex-col items-center gap-2 p-3 rounded-xl text-center transition-all hover:bg-white/5"
-                  style={{ border: '1px solid rgba(245,158,11,0.2)' }}
-                >
-                  <span className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/25 flex items-center justify-center text-amber-400">
-                    <GitBranch size={14} />
-                  </span>
-                  <span className="text-xs font-medium text-slate-300">If / Else</span>
-                </button>
-                <button
-                  onClick={() => addNode('ai')}
-                  className="flex flex-col items-center gap-2 p-3 rounded-xl text-center transition-all hover:bg-purple-500/5"
-                  style={{ border: '1px solid rgba(168,85,247,0.2)' }}
-                >
-                  <span className="w-8 h-8 rounded-lg bg-purple-500/15 border border-purple-500/25 flex items-center justify-center text-purple-400">
-                    <Brain size={14} />
-                  </span>
-                  <span className="text-xs font-medium text-slate-300">AI Node</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Apps */}
-            <div>
-              <p className="section-title">Apps</p>
-              <div className="space-y-2">
-                {[
-                  { provider: 'slack', name: 'Slack', icon: <Slack size={14} />, color: '#4A154B' },
-                  { provider: 'gmail', name: 'Gmail', icon: <Mail size={14} />, color: '#EA4335' },
-                  { provider: 'stripe', name: 'Stripe', icon: <CreditCard size={14} />, color: '#635BFF' },
-                ].map((app) => (
+              {/* Intelligence Group */}
+              <div className="space-y-3">
+                <label className="section-label">AI & Logic</label>
+                <div className="grid grid-cols-2 gap-3">
                   <button
-                    key={app.provider}
-                    onClick={() => addNode('action', app.provider)}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all hover:bg-white/5"
-                    style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+                    onClick={() => addNode('condition')}
+                    className="flex flex-col items-center gap-3 p-4 rounded-xl glass-card hover:border-amber-500/40 hover:bg-amber-500/5 transition-all group border-amber-500/10"
                   >
-                    <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-white"
-                      style={{ background: `${app.color}22`, border: `1px solid ${app.color}44` }}>
-                      {app.icon}
-                    </span>
-                    <span className="text-xs font-medium text-slate-300">{app.name} Action</span>
-                    <Plus size={13} className="ml-auto text-slate-600" />
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0 group-hover:rotate-12 transition-transform">
+                      <GitBranch size={18} />
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-400">Condition</span>
                   </button>
-                ))}
+                  <button
+                    onClick={() => addNode('ai')}
+                    className="flex flex-col items-center gap-3 p-4 rounded-xl glass-card hover:border-purple-500/40 hover:bg-purple-500/5 transition-all group border-purple-500/10"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0 group-hover:scale-110 transition-transform">
+                      <Brain size={18} />
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-400">AI Step</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Integrations Group */}
+              <div className="space-y-3">
+                <label className="section-label">Third-party Apps</label>
+                <div className="space-y-2">
+                  {[
+                    { provider: 'slack', name: 'Slack', icon: <Slack size={16} />, color: '#4A154B' },
+                    { provider: 'gmail', name: 'Gmail', icon: <Mail size={16} />, color: '#EA4335' },
+                    { provider: 'stripe', name: 'Stripe', icon: <CreditCard size={16} />, color: '#635BFF' },
+                  ].map((app) => (
+                    <button
+                      key={app.provider}
+                      onClick={() => addNode('action', app.provider)}
+                      className="w-full flex items-center gap-4 p-3.5 rounded-xl glass-card hover:bg-white/5 transition-all group"
+                    >
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform"
+                           style={{ background: `${app.color}15`, border: `1px solid ${app.color}30`, color: app.color }}>
+                        {app.icon}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="text-[12px] font-bold text-white">{app.name}</div>
+                        <div className="text-[9px] text-slate-600 font-bold uppercase tracking-tight">Post Data</div>
+                      </div>
+                      <Plus size={14} className="text-slate-700 group-hover:text-white transition-colors" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Tips */}
-            <div className="mt-6 p-3 rounded-xl" style={{ background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)' }}>
-              <p className="text-[10px] text-indigo-400 font-semibold mb-1">💡 Pro Tips</p>
-              <ul className="text-[10px] text-slate-500 space-y-1">
-                <li>• Drag nodes freely on the canvas</li>
-                <li>• Connect handles to chain steps</li>
-                <li>• Click nodes to configure</li>
-                <li>• Press Save to persist changes</li>
-              </ul>
+            <div className="p-6 bg-brand/5 border-t border-brand/10">
+              <div className="flex items-start gap-3">
+                <Zap size={14} className="text-brand-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[11px] text-brand-300 font-bold uppercase tracking-tight mb-1">Fast Prototyping</p>
+                  <p className="text-[10px] text-slate-500 leading-normal">
+                    Drag connections from circle handles to define the execution path.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
-      </div>
+      </aside>
     </div>
   );
 }

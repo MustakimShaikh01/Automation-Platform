@@ -20,59 +20,59 @@ function CreateWorkflowModal({ onClose, onCreate }: { onClose: () => void; onCre
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
       <div
-        className="w-full max-w-md rounded-2xl p-6 shadow-2xl"
-        style={{ background: '#0f0f1a', border: '1px solid rgba(99,102,241,0.3)' }}
+        className="w-full max-w-md rounded-3xl p-8 glass shadow-[0_0_100px_-20px_rgba(99,102,241,0.3)] animate-scale-in"
+        style={{ border: '1px solid var(--border-subtle)' }}
       >
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center text-indigo-400">
-              <Zap size={16} />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand-400 shadow-inner">
+              <Zap size={20} className="fill-brand-400/20" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">New Workflow</h2>
-              <p className="text-xs text-slate-500">Give it a descriptive name</p>
+              <h2 className="text-xl font-black text-white tracking-tight">New Automation</h2>
+              <p className="text-xs text-slate-500 font-medium">Design your next powerful flow</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5">
-            <X size={16} />
+          <button onClick={onClose} className="p-2 text-slate-500 hover:text-white transition-all rounded-xl hover:bg-white/5">
+            <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Workflow Name</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="section-label">Flow Identifier</label>
             <input
               type="text"
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. New Lead Notification, Weekly Report..."
-              className="input-field"
+              placeholder="e.g. Stripe → Discord Sync"
+              className="input-field h-12 text-base font-bold"
               maxLength={80}
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            {['New Lead Alert', 'Weekly Digest', 'Support Ticket'].map((suggestion) => (
+          <div className="flex flex-wrap gap-2">
+            {['Lead Router', 'Email Sync', 'Uptime Monitor'].map((suggestion) => (
               <button
                 key={suggestion}
                 type="button"
                 onClick={() => setName(suggestion)}
-                className="text-[11px] text-slate-500 hover:text-indigo-400 px-2 py-1.5 rounded-lg border border-white/5 hover:border-indigo-500/25 transition-all text-center"
+                className="text-[11px] font-black text-slate-500 hover:text-brand-400 px-3 py-1.5 rounded-full border border-white/5 hover:border-brand-500/30 transition-all uppercase tracking-widest"
               >
                 {suggestion}
               </button>
             ))}
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">
-              Cancel
+          <div className="flex gap-4 pt-4">
+            <button type="button" onClick={onClose} className="btn-secondary h-12 flex-1 justify-center text-xs font-bold">
+              Dismiss
             </button>
-            <button type="submit" disabled={!name.trim()} className="btn-primary flex-1 justify-center">
-              <Plus size={15} /> Create
+            <button type="submit" disabled={!name.trim()} className="btn-primary h-12 flex-1 justify-center text-xs font-black uppercase tracking-widest">
+              <Plus size={16} className="mr-2" /> Initialize
             </button>
           </div>
         </form>
@@ -92,44 +92,46 @@ export default function WorkflowsPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (name: string) => workflowApi.create({ name, description: 'New automation flow' }),
+    mutationFn: (name: string) => workflowApi.create({ name, description: 'New automation flow started today.' }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['workflows'] });
-      toast.success('Workflow created!');
+      toast.success('Workflow initialized!');
       setShowCreateModal(false);
       router.push(`/dashboard/workflows/${data.id}`);
     },
-    onError: () => toast.error('Failed to create workflow'),
+    onError: () => toast.error('Creation failed'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: workflowApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workflows'] });
-      toast.success('Workflow deleted');
+      toast.success('Resource decommissioned');
     },
-    onError: () => toast.error('Failed to delete'),
   });
 
   const toggleMutation = useMutation({
     mutationFn: workflowApi.toggle,
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['workflows'] });
-      toast.success(data.isActive ? 'Workflow activated' : 'Workflow paused');
+      toast.success(data.isActive ? 'Flow now active' : 'Flow paused');
     },
   });
 
   const triggerMutation = useMutation({
-    mutationFn: (id: string) => workflowApi.trigger(id, { source: 'manual', timestamp: new Date().toISOString() }),
-    onSuccess: () => toast.success('Execution triggered! Check Executions tab.'),
-    onError: () => toast.error('Failed to trigger. Activate the workflow first.'),
+    mutationFn: (id: string) => workflowApi.trigger(id, { source: 'dashboard', timestamp: new Date().toISOString() }),
+    onSuccess: () => toast.success('Simulation triggered successfully'),
+    onError: () => toast.error('Activation required before simulation'),
   });
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <Loader2 className="animate-spin text-indigo-500" size={28} />
-        <p className="text-slate-500 text-sm">Loading workflows...</p>
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 animate-pulse">
+        <div className="w-16 h-16 rounded-full border-2 border-brand-500/20 border-t-brand-500 animate-spin" />
+        <div className="text-center">
+          <p className="text-white font-bold tracking-widest uppercase text-xs">Synchronizing</p>
+          <p className="text-slate-500 text-[10px] mt-1">Fetching your automation ecosystem...</p>
+        </div>
       </div>
     );
   }
@@ -143,53 +145,57 @@ export default function WorkflowsPage() {
         />
       )}
 
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+      <div className="space-y-8 animate-fade-in">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-subtle">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-1">Workflows</h1>
-            <p className="text-slate-400 text-sm">Design, run, and manage your automations. {workflows?.length > 0 && <span className="text-indigo-400">{workflows.length} total</span>}</p>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-2 w-2 rounded-full bg-brand-500 shadow-[0_0_10px_var(--brand-500)]" />
+              <h1 className="text-3xl font-black text-white tracking-tighter">My Workflows</h1>
+            </div>
+            <p className="text-slate-500 text-sm font-medium tracking-tight max-w-xl">
+              Construct high-performance automations with visual logic. 
+              Currently managing <span className="text-brand-400 font-bold">{workflows?.length || 0} production engines</span>.
+            </p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
             disabled={createMutation.isPending}
-            className="btn-primary"
+            className="btn-primary h-12 px-8 shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.4)]"
           >
-            {createMutation.isPending ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
-            New Workflow
+            {createMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+            <span className="font-black uppercase tracking-widest text-xs hidden sm:inline ml-2">New Core</span>
           </button>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Workflow Ecosystem Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {!workflows?.length ? (
-            <div className="col-span-full py-20 text-center glass-card"
-              style={{ borderStyle: 'dashed', borderColor: 'rgba(99,102,241,0.2)' }}>
-              <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mx-auto mb-4">
-                <GitBranch size={24} />
+            <div className="col-span-full py-24 text-center rounded-[2rem] border-2 border-dashed border-white/5 bg-white/[0.01]">
+              <div className="w-20 h-20 rounded-3xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand-400 mx-auto mb-6 shadow-2xl">
+                <Activity size={32} />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">No workflows yet</h3>
-              <p className="text-slate-400 text-sm mb-6 max-w-sm mx-auto">
-                Build your first automation by connecting apps, adding logic, and setting triggers.
+              <h3 className="text-xl font-black text-white mb-2 tracking-tight">Empty Workspace</h3>
+              <p className="text-slate-500 text-sm mb-8 max-w-sm mx-auto font-medium leading-relaxed">
+                Connect your first pair of applications. Every great process starts with a single trigger.
               </p>
-              <button onClick={() => setShowCreateModal(true)} className="btn-primary">
-                <Plus size={15} /> Create Your First Workflow
+              <button onClick={() => setShowCreateModal(true)} className="btn-primary h-12 px-10">
+                <Plus size={18} className="mr-2" /> Start Designing
               </button>
             </div>
           ) : (
             <>
-              {/* Create new card */}
+              {/* Ghost Creation Card */}
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="glass-card p-5 flex flex-col items-center justify-center gap-3 text-center min-h-[200px] group transition-all duration-200 hover:border-indigo-500/30"
-                style={{ borderStyle: 'dashed' }}
+                className="h-[240px] rounded-[2rem] border-2 border-dashed border-brand/20 hover:border-brand-500/50 bg-brand/5 hover:bg-brand/10 p-8 flex flex-col items-center justify-center gap-4 text-center group transition-all duration-500"
               >
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
-                  <Plus size={22} />
+                <div className="w-14 h-14 rounded-2xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 group-hover:scale-110 group-hover:rotate-90 transition-all duration-500 shadow-xl">
+                  <Plus size={28} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white mb-0.5">Create Workflow</p>
-                  <p className="text-xs text-slate-500">Start from scratch</p>
+                  <p className="text-base font-black text-white tracking-tight">Initialize Flow</p>
+                  <p className="text-[11px] text-brand-400 font-bold uppercase tracking-widest mt-1 opacity-70">Add New Module</p>
                 </div>
               </button>
 
@@ -200,7 +206,7 @@ export default function WorkflowsPage() {
                   onToggle={() => toggleMutation.mutate(wf.id)}
                   onTrigger={() => triggerMutation.mutate(wf.id)}
                   onDelete={() => {
-                    if (confirm(`Delete "${wf.name}"? This cannot be undone.`)) {
+                    if (confirm(`Decommission workflow "${wf.name}"? This action is permanent.`)) {
                       deleteMutation.mutate(wf.id);
                     }
                   }}
@@ -227,56 +233,62 @@ function WorkflowCard({
   const [menuOpen, setMenuOpen] = useState(false);
 
   const triggerIcon = wf.triggerType === 'WEBHOOK'
-    ? <Webhook size={18} />
+    ? <Webhook size={20} />
     : wf.triggerType === 'SCHEDULE'
-    ? <Clock size={18} />
-    : <Play size={18} />;
+    ? <Clock size={20} />
+    : <Play size={20} />;
 
   return (
-    <div className={`glass-card p-5 flex flex-col relative group transition-all duration-200 ${wf.isActive ? '' : 'opacity-60 hover:opacity-80'}`}
-      style={wf.isActive ? { borderColor: 'rgba(99,102,241,0.25)' } : {}}>
+    <div className={`group relative h-[240px] rounded-[2rem] flex flex-col p-8 glass-card border-white/5 hover:border-brand/40 transition-all duration-500 hover:translate-y-[-4px] hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] overflow-hidden ${wf.isActive ? '' : 'grayscale-[0.4] opacity-70'}`}>
+      
+      {/* Dynamic Background Gradient */}
+      <div className={`absolute top-0 right-0 w-40 h-40 rounded-full blur-[80px] -mr-10 -mt-10 transition-colors duration-700 ${wf.isActive ? 'bg-brand/10 group-hover:bg-brand/20' : 'bg-slate-500/5'}`} />
 
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+      {/* Header Area */}
+      <div className="flex items-start justify-between mb-6 relative z-10">
+        <div className="flex items-center gap-4">
+          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border transition-all duration-500 group-hover:scale-110 shadow-xl ${
             wf.isActive
-              ? 'bg-indigo-500/15 border border-indigo-500/25 text-indigo-400'
-              : 'bg-slate-800/80 border border-slate-700/50 text-slate-500'
+              ? 'bg-brand/10 border-brand/20 text-brand-400'
+              : 'bg-slate-800/80 border-slate-700/50 text-slate-500'
           }`}>
             {triggerIcon}
           </div>
-          <div className="min-w-0">
-            <h3 className="text-sm font-bold text-white truncate">{wf.name}</h3>
-            <p className="text-[10px] text-slate-500 capitalize">{wf.triggerType} Trigger</p>
+          <div className="min-w-0 pr-2">
+            <h3 className="text-lg font-black text-white leading-tight truncate group-hover:text-brand-400 transition-colors">{wf.name}</h3>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`h-1.5 w-1.5 rounded-full ${wf.isActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`} />
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{wf.triggerType} GATE</span>
+            </div>
           </div>
         </div>
 
-        {/* More menu */}
+        {/* Global Context Menu */}
         <div className="relative">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            className="p-2 text-slate-600 hover:text-white transition-all rounded-xl hover:bg-white/5 active:scale-90"
           >
-            <MoreVertical size={15} />
+            <MoreVertical size={18} />
           </button>
+          
           {menuOpen && (
             <>
-              <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-              <div className="absolute right-0 top-8 w-36 z-20 rounded-xl overflow-hidden shadow-2xl"
-                style={{ background: '#14141f', border: '1px solid rgba(99,102,241,0.2)' }}>
+              <div className="fixed inset-0 z-30" onClick={() => setMenuOpen(false)} />
+              <div className="absolute right-0 top-10 w-48 z-40 rounded-2xl overflow-hidden glass shadow-2xl p-1.5 border border-white/10 animate-fade-in">
                 <Link
                   href={`/dashboard/workflows/${wf.id}`}
-                  className="flex items-center gap-2 px-3 py-2.5 text-sm text-slate-300 hover:bg-white/5 hover:text-white transition-colors"
+                  className="flex items-center gap-3 px-3 py-3 text-sm font-bold text-slate-300 hover:bg-brand-500 hover:text-white rounded-xl transition-all"
                   onClick={() => setMenuOpen(false)}
                 >
-                  <Edit2 size={13} /> Edit Flow
+                  <Edit2 size={16} /> Engineering
                 </Link>
+                <div className="h-[1px] bg-white/5 my-1" />
                 <button
                   onClick={() => { onDelete(); setMenuOpen(false); }}
-                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-3 text-sm font-bold text-red-500 hover:bg-red-500/10 rounded-xl transition-all text-left"
                 >
-                  <Trash2 size={13} /> Delete
+                  <Trash2 size={16} /> Decommission
                 </button>
               </div>
             </>
@@ -284,40 +296,39 @@ function WorkflowCard({
         </div>
       </div>
 
-      {/* Description */}
-      <p className="text-xs text-slate-500 mb-5 flex-1 line-clamp-2">
-        {wf.description || 'No description provided.'}
-      </p>
+      {/* Visual Workspace Stats */}
+      <div className="flex-1 mb-8 relative z-10">
+        <p className="text-xs text-slate-400 font-medium leading-relaxed line-clamp-2 italic opacity-80 group-hover:opacity-100 transition-opacity">
+          "{wf.description || 'System automation module with no defined manifest.'}"
+        </p>
+      </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between border-t border-white/5 pt-4">
-        {/* Toggle */}
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={onToggle}
-            className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${wf.isActive ? 'bg-indigo-500' : 'bg-slate-700'}`}
-          >
-            <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${wf.isActive ? 'translate-x-4' : 'translate-x-0'}`} />
-          </button>
-          <span className={`text-xs font-semibold ${wf.isActive ? 'text-indigo-400' : 'text-slate-500'}`}>
-            {wf.isActive ? 'Active' : 'Draft'}
+      {/* Interactive Footer */}
+      <div className="flex items-center justify-between pt-6 border-t border-white/5 relative z-10">
+        {/* Toggle Power */}
+        <div className="flex items-center gap-3 group/toggle cursor-pointer" onClick={onToggle}>
+          <div className={`relative w-10 h-6 rounded-full transition-all duration-300 ${wf.isActive ? 'bg-brand' : 'bg-slate-700/50'}`}>
+            <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-lg transition-all duration-300 ${wf.isActive ? 'translate-x-4' : 'translate-x-0'}`} />
+          </div>
+          <span className={`text-[11px] font-black uppercase tracking-widest transition-colors ${wf.isActive ? 'text-brand-400' : 'text-slate-600'}`}>
+            {wf.isActive ? 'Online' : 'Off'}
           </span>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2">
+        {/* Action Clusters */}
+        <div className="flex items-center gap-4">
           {wf.isActive && (
             <button
-              onClick={onTrigger}
+              onClick={(e) => { e.stopPropagation(); onTrigger(); }}
               disabled={isTriggering}
-              className="btn-ghost text-[11px] py-1 px-2.5 border border-white/8 hover:border-indigo-500/40 hover:text-indigo-400"
+              className="flex items-center justify-center w-9 h-9 text-brand-400 hover:text-white bg-brand/10 hover:bg-brand rounded-xl border border-brand/20 transition-all duration-300 active:scale-90"
+              title="Manual Override"
             >
-              {isTriggering ? <Loader2 size={11} className="animate-spin" /> : <Play size={11} />}
-              Run
+              {isTriggering ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} className="fill-current" />}
             </button>
           )}
-          <div className="flex items-center gap-1 text-[11px] text-slate-500 bg-slate-800/50 px-2 py-1 rounded-lg">
-            <Activity size={11} />
+          <div className="flex items-center gap-2 text-[11px] text-slate-400 bg-white/5 h-9 px-4 rounded-xl border border-white/5 font-black group/stats">
+            <Activity size={14} className="text-brand-500 group-hover/stats:animate-pulse" />
             <span>{wf._count?.executions || 0}</span>
           </div>
         </div>
